@@ -1,0 +1,33 @@
+Nmap scan report for 10.0.0.1
+Host is up (0.0045s latency).
+MAC Address: FC:AA:14:7E:64:02 (Giga-byte Technology)
+Nmap scan report for XBOXONE (10.0.23.0)
+Host is up (1.8s latency).
+MAC Address: 94:9A:A9:55:AD:F7 (Microsoft)
+Nmap scan report for Xolani-s-A04 (10.0.31.188)
+Host is up (0.13s latency).
+MAC Address: 86:8C:3B:0D:F0:89 (Unknown)
+Nmap scan report for Pixel-6 (10.0.32.237)
+Host is up (0.20s latency).
+MAC Address: 82:49:8F:96:83:D8 (Unknown)
+Nmap scan report for 10.0.38.120
+Host is up (0.18s latency).
+MAC Address: 60:E9:AA:E9:67:4D (Cloud Network Technology Singapore PTE.)
+Nmap scan report for XBOX (10.0.46.60)
+Host is up (0.0074s latency).
+MAC Address: 90:6A:EB:9A:C0:C8 (Microsoft)
+Nmap scan report for 10.0.50.226
+Host is up (0.032s latency).
+MAC Address: 36:61:96:13:2B:A0 (Unknown)
+Nmap scan report for RokuExpress-5KH (10.0.53.141)
+Host is up (0.25s latency).
+MAC Address: 84:EA:ED:BF:4A:D3 (Roku)
+Nmap scan report for 10.0.58.240
+Host is up (0.0079s latency).
+MAC Address: 64:1C:AE:48:D2:D6 (Samsung Electronics)
+Nmap scan report for Galaxy-J5-2016 (10.0.63.172)
+Host is up (0.17s latency).
+MAC Address: 00:87:01:80:57:C9 (Samsung Electronics)
+Nmap scan report for LGwebOSTV (10.0.69.188)
+Host is up (0.079s latency).
+MAC Address: A4:CE:DA:02:31:52 (Arcadyan)

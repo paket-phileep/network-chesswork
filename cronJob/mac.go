@@ -1,0 +1,5 @@
+package cronJob
+
+func FindConnectedMacAddresses() {
+
+}

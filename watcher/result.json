@@ -1,0 +1,57 @@
+{
+  "00:87:01:80:57:C9": {
+    "hostname": "Galaxy-J5-2016 (10.0.63.172)",
+    "latency": "0.17",
+    "vendor": "Samsung Electronics"
+  },
+  "36:61:96:13:2B:A0": {
+    "hostname": "10.0.50.226",
+    "latency": "0.032",
+    "vendor": "Unknown"
+  },
+  "60:E9:AA:E9:67:4D": {
+    "hostname": "10.0.38.120",
+    "latency": "0.18",
+    "vendor": "Cloud Network Technology Singapore PTE."
+  },
+  "64:1C:AE:48:D2:D6": {
+    "hostname": "10.0.58.240",
+    "latency": "0.0079",
+    "vendor": "Samsung Electronics"
+  },
+  "82:49:8F:96:83:D8": {
+    "hostname": "Pixel-6 (10.0.32.237)",
+    "latency": "0.20",
+    "vendor": "Unknown"
+  },
+  "84:EA:ED:BF:4A:D3": {
+    "hostname": "RokuExpress-5KH (10.0.53.141)",
+    "latency": "0.25",
+    "vendor": "Roku"
+  },
+  "86:8C:3B:0D:F0:89": {
+    "hostname": "Xolani-s-A04 (10.0.31.188)",
+    "latency": "0.13",
+    "vendor": "Unknown"
+  },
+  "90:6A:EB:9A:C0:C8": {
+    "hostname": "XBOX (10.0.46.60)",
+    "latency": "0.0074",
+    "vendor": "Microsoft"
+  },
+  "94:9A:A9:55:AD:F7": {
+    "hostname": "XBOXONE (10.0.23.0)",
+    "latency": "1.8",
+    "vendor": "Microsoft"
+  },
+  "A4:CE:DA:02:31:52": {
+    "hostname": "LGwebOSTV (10.0.69.188)",
+    "latency": "0.079",
+    "vendor": "Arcadyan"
+  },
+  "FC:AA:14:7E:64:02": {
+    "hostname": "10.0.0.1",
+    "latency": "0.0045",
+    "vendor": "Giga-byte Technology"
+  }
+}
