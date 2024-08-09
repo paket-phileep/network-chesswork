@@ -14,7 +14,7 @@ fi
 
 # Run nmap scan
 echo "Scanning network range: $range"
-nmap -sn "$range"
+nmap -sn "$range" -oN "./temp/nmap/nmap-scan/results/network-clients"
 
 # Check if nmap command was successful
 if [ $? -ne 0 ]; then

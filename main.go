@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 	"network-chesswork/cronJob"
-	"network-chesswork/info"
+	"network-chesswork/info" // Assuming this is the correct package path
 
-	"github.com/robfig/cron"
+	"github.com/robfig/cron/v3" // Updated import path for the robfig/cron package
 )
 
 var (
@@ -15,46 +15,49 @@ var (
 )
 
 func main() {
+	c := cron.New()
 	flag.Parse()
-	// parse the cli flags
-	// Access the value using the pointer
-	if *ssidFlag != "" {
-		// TODO: Implement the logic to handle the SSID parameter
-		fmt.Println("SSID flag provided:", *ssidFlag)
-	} else {
-		// TODO: Implement logic to use an existing connection
+
+	if *ssidFlag == "" {
+		// Implement logic to use an existing connection
 		fmt.Println("No SSID provided, using existing connection.")
 
-		// get the information from the existing connection about the ip ranges ect
-
+		// Get the information from the existing connection about the IP ranges, etc.
 		networkInfo, err := info.Network()
-			return
+		if err != nil {
+			log.Fatalf("Error getting network information: %v", err)
 		}
+
 		fmt.Println("Successfully gathered network information")
 		for key, value := range networkInfo {
 			fmt.Printf("%s: %s\n", key, value)
 		}
+
+		// Extract the CIDR Notation
+		cidrNotation, ok := networkInfo["CIDR Notation"]
+		if !ok {
+			log.Fatalf("CIDR Notation not found in network information")
+		}
+
+		// initial run as this runs every 2 hours
+		go cronJob.FindConnectedMacAddresses(cidrNotation)
+		c.AddFunc("@every 2h30m", func() {
+			fmt.Println("Every 2 hours 30 minutes")
+			go cronJob.FindConnectedMacAddresses(cidrNotation)
+		})
+
+	} else {
+		// Implement the logic to handle the SSID parameter
+		fmt.Println("SSID flag provided:", *ssidFlag)
 	}
 
-	c := cron.New()
-
-	// Schedule the health check to run every minute
-	_, err := c.AddFunc("* * * * *", cronJob.HealthCheck)
-	if err != nil {
-		log.Fatalf("Error adding health check cron job: %v", err)
-	}
-	fmt.Printf("Added health check cron job with entry ID: %v\n", entryID)
-
-	// Schedule the MAC gathering to run every three hours
-	_, err = c.AddFunc("0 */3 * * *", cronJob.FindConnectedMacAddresses)
-	if err != nil {
-		log.Fatalf("Error adding MAC gathering cron job: %v", err)
-	}
-	fmt.Printf("Added MAC gathering cron job with entry ID: %v\n", entryID)
+	c.AddFunc("@every 1s", func() {
+		// fmt.Println("Every 1 second")
+		go cronJob.HealthCheck("www.google.com")
+	})
 
 	c.Start()
 
-	// Keep the program running
-	select {}
-
+	// Keep the main function running to allow cron jobs to work
+	select {} // This blocks indefinitely
 }
