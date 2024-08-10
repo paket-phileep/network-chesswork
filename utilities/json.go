@@ -7,6 +7,33 @@ import (
 )
 
 // AppendJSON appends new data to a JSON file, maintaining a single JSON object.
+// ReadKeysJSON reads a JSON file and returns the keys from the JSON data.
+
+
+func ReadKeysJSON(filename string) ([]string, error) {
+	// Open the file for reading
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	// Read existing data
+	var data map[string]interface{}
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&data); err != nil {
+		return nil, err
+	}
+
+	// Extract keys from the data
+	keys := make([]string, 0, len(data))
+	for key := range data {
+		keys = append(keys, key)
+	}
+
+	return keys, nil
+}
+
 func AppendJSON(filename string, newData map[string]interface{}) error {
 	// Open the file
 	file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0644)

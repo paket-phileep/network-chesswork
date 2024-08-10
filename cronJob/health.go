@@ -1,25 +1,14 @@
 package cronJob
 
 import (
-	"fmt"
-
-	"github.com/go-ping/ping"
+	"network-chesswork/net"
 )
 
 func HealthCheck(host string) error {
-	pinger, err := ping.NewPinger(host)
+	err := net.Ping(host)
 	if err != nil {
+		net.Reconnect("")
 		return err
 	}
-	pinger.Count = 3
-	err = pinger.Run() // Blocks until finished.
-	if err != nil {
-		panic(err)
-	}
-	stats := pinger.Statistics() // get send/receive/duplicate/rtt stats
-
-	fmt.Printf("Type of stats: %T\n", stats)
-
 	return nil
-
 }

@@ -33,10 +33,10 @@ func main() {
 		fmt.Println("INTERFACE flag provided:", *interfaceFlag)
 	}
 
-	// c.AddFunc("@every 1s", func() {
-	// 	// fmt.Println("Every 1 second")
-	// 	go cronJob.HealthCheck("www.google.com")
-	// })
+	c.AddFunc("@every 1s", func() {
+		// fmt.Println("Every 1 second")
+		go cronJob.HealthCheck("www.google.com")
+	})
 
 	c.Start()
 
