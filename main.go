@@ -1,63 +1,74 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
-	"network-chesswork/cronJob"
-	"network-chesswork/info" // Assuming this is the correct package path
+	"network-chesswork/utilities"
+	"os"
+	"time"
 
-	"github.com/robfig/cron/v3" // Updated import path for the robfig/cron package
-)
-
-var (
-	ssidFlag = flag.String("ssid", "", "SSID to connect to or use existing connection")
+	"github.com/google/gopacket"
+	"github.com/google/gopacket/layers"
+	"github.com/google/gopacket/pcap"
 )
 
 func main() {
-	c := cron.New()
-	flag.Parse()
-
-	if *ssidFlag == "" {
-		// Implement logic to use an existing connection
-		fmt.Println("No SSID provided, using existing connection.")
-
-		// Get the information from the existing connection about the IP ranges, etc.
-		networkInfo, err := info.Network()
-		if err != nil {
-			log.Fatalf("Error getting network information: %v", err)
-		}
-
-		fmt.Println("Successfully gathered network information")
-		for key, value := range networkInfo {
-			fmt.Printf("%s: %s\n", key, value)
-		}
-
-		// Extract the CIDR Notation
-		cidrNotation, ok := networkInfo["CIDR Notation"]
-		if !ok {
-			log.Fatalf("CIDR Notation not found in network information")
-		}
-
-		// initial run as this runs every 2 hours
-		go cronJob.FindConnectedMacAddresses(cidrNotation)
-		c.AddFunc("@every 2h30m", func() {
-			fmt.Println("Every 2 hours 30 minutes")
-			go cronJob.FindConnectedMacAddresses(cidrNotation)
-		})
-
-	} else {
-		// Implement the logic to handle the SSID parameter
-		fmt.Println("SSID flag provided:", *ssidFlag)
+	if len(os.Args) != 2 {
+		fmt.Println("Usage: go run main.go <network_interface>")
+		os.Exit(1)
 	}
 
-	c.AddFunc("@every 1s", func() {
-		// fmt.Println("Every 1 second")
-		go cronJob.HealthCheck("www.google.com")
-	})
+	iface := os.Args[1]
 
-	c.Start()
+	// Open the network interface for packet capture
+	handle, err := pcap.OpenLive(iface, 1600, true, pcap.BlockForever)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer handle.Close()
 
-	// Keep the main function running to allow cron jobs to work
-	select {} // This blocks indefinitely
+	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
+	macAddresses := make(map[string]bool)
+
+	for packet := range packetSource.Packets() {
+		// Extract Ethernet layer
+		ethernetLayer := packet.Layer(layers.LayerTypeEthernet)
+		if ethernetLayer != nil {
+			ethernetPacket, ok := ethernetLayer.(*layers.Ethernet)
+			if !ok {
+				continue
+			}
+
+			srcMAC := ethernetPacket.SrcMAC.String()
+			dstMAC := ethernetPacket.DstMAC.String()
+
+			if _, found := macAddresses[srcMAC]; !found {
+				macAddresses[srcMAC] = true
+				fmt.Println("Source MAC Address:", srcMAC)
+				// Specify the file name
+				path := "./temp/source-mac.json"
+
+				data := map[string]interface{}{
+					srcMAC: map[string]interface{}{
+						"time": time.Now().UTC().Format(time.RFC3339),
+					},
+				}
+				utilities.AppendJSON(path, data)
+			}
+
+			if _, found := macAddresses[dstMAC]; !found {
+				macAddresses[dstMAC] = true
+				fmt.Println("Destination MAC Address:", dstMAC)
+				path := "./temp/dest-mac.json"
+
+				data := map[string]interface{}{
+					srcMAC: map[string]interface{}{
+						"time": time.Now().UTC().Format(time.RFC3339),
+					},
+				}
+
+				utilities.AppendJSON(path, data)
+			}
+		}
+	}
 }

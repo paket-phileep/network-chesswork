@@ -4,6 +4,7 @@ go 1.22.4
 
 require (
 	github.com/go-ping/ping v1.1.0
+	github.com/google/gopacket v1.1.19
 	github.com/robfig/cron/v3 v3.0.1
 )
 
