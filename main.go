@@ -1,74 +1,45 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"log"
-	"network-chesswork/utilities"
-	"os"
-	"time"
+	"network-chesswork/cronJob"
 
-	"github.com/google/gopacket"
-	"github.com/google/gopacket/layers"
-	"github.com/google/gopacket/pcap"
+	"github.com/robfig/cron/v3"
+)
+
+var (
+	interfaceFlag = flag.String("interface", "", "INTERFACE to connect to or en0")
 )
 
 func main() {
-	if len(os.Args) != 2 {
-		fmt.Println("Usage: go run main.go <network_interface>")
-		os.Exit(1)
+	c := cron.New()
+	flag.Parse()
+
+	if *interfaceFlag == "" {
+		// Implement logic to use an existing connection
+		fmt.Println("No INTERFACE provided")
+
+		go cronJob.FindConnectedMacAddresses("")
+
+		c.AddFunc("@every 2h30m", func() {
+			fmt.Println("Every 2 hours 30 minutes")
+
+			go cronJob.FindConnectedMacAddresses("")
+		})
+
+	} else {
+		// Implement the logic to handle the INTERFACE parameter
+		fmt.Println("INTERFACE flag provided:", *interfaceFlag)
 	}
 
-	iface := os.Args[1]
+	// c.AddFunc("@every 1s", func() {
+	// 	// fmt.Println("Every 1 second")
+	// 	go cronJob.HealthCheck("www.google.com")
+	// })
 
-	// Open the network interface for packet capture
-	handle, err := pcap.OpenLive(iface, 1600, true, pcap.BlockForever)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer handle.Close()
+	c.Start()
 
-	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
-	macAddresses := make(map[string]bool)
-
-	for packet := range packetSource.Packets() {
-		// Extract Ethernet layer
-		ethernetLayer := packet.Layer(layers.LayerTypeEthernet)
-		if ethernetLayer != nil {
-			ethernetPacket, ok := ethernetLayer.(*layers.Ethernet)
-			if !ok {
-				continue
-			}
-
-			srcMAC := ethernetPacket.SrcMAC.String()
-			dstMAC := ethernetPacket.DstMAC.String()
-
-			if _, found := macAddresses[srcMAC]; !found {
-				macAddresses[srcMAC] = true
-				fmt.Println("Source MAC Address:", srcMAC)
-				// Specify the file name
-				path := "./temp/source-mac.json"
-
-				data := map[string]interface{}{
-					srcMAC: map[string]interface{}{
-						"time": time.Now().UTC().Format(time.RFC3339),
-					},
-				}
-				utilities.AppendJSON(path, data)
-			}
-
-			if _, found := macAddresses[dstMAC]; !found {
-				macAddresses[dstMAC] = true
-				fmt.Println("Destination MAC Address:", dstMAC)
-				path := "./temp/dest-mac.json"
-
-				data := map[string]interface{}{
-					srcMAC: map[string]interface{}{
-						"time": time.Now().UTC().Format(time.RFC3339),
-					},
-				}
-
-				utilities.AppendJSON(path, data)
-			}
-		}
-	}
+	// Keep the main function running to allow cron jobs to work
+	select {} // This blocks indefinitely
 }
